@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: comet-service
+  redis:
+      host: 47.94.210.233
+      jedis:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+  kafka:
+      producer:
+        retries: 0
+        batch-size: 16384
+        buffer-memory: 33554432
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+        bootstrap-servers: 47.94.210.233:9092
+      consumer:
+        bootstrap-servers: 47.94.210.233:9092
+        group-id: foo
+        auto-offset-reset: earliest
+        enable-auto-commit: true
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        auto-commit-interval: 1000ms
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        health-check-interval: 15s
+        tags: conet
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+qcloud:
+  serverHost: asuis.mynatapp.cc
+  authServerUrl: http://118.89.110.246/mina_auth/
+  tunnelServerUrl: https://qgzugymk.ws.qcloud.la
+  tunnelSignatureKey: 41d71919294363b3736b5eace1c76a07
+  networkTimeout: 30000
