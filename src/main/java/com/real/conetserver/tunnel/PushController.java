@@ -12,11 +12,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Api("消息推送接口")
 public class PushController {
+
+    private final RoomService roomService;
+
     @Autowired
-    private RoomService roomService;
-    @RequestMapping(value = "/push/{roomId}/{roomSize}",method = RequestMethod.POST)
-    public String pushByRoomId(@PathVariable Long roomId,@PathVariable Integer roomSize,@RequestBody Message message){
-        roomService.pushMessageByRoomId(roomId,roomSize,message);
+    public PushController(RoomService roomService) {
+        this.roomService = roomService;
+    }
+
+    @RequestMapping(value = "/push/{roomId}",method = RequestMethod.POST)
+    public String pushByRoomId(@PathVariable Long roomId,@RequestBody Message message){
+        try {
+            roomService.pushMessageByRoomId(roomId,200,message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "1";
     }
 }

@@ -8,7 +8,7 @@ import com.real.conetserver.tunnel.model.UserSession;
 import com.real.conetserver.tunnel.service.MessageService;
 import com.real.conetserver.tunnel.service.RoomService;
 import com.real.conetserver.tunnel.service.UserSessionService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
  * @author asuis
  */
 @Component
-@Slf4j
 public class TunnelHandler implements com.qcloud.weapp.tunnel.TunnelHandler {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TunnelHandler.class);
     private final UserSessionService userSessionService;
     private final MessageService messageService;
     private final RoomService roomService;

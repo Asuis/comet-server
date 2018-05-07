@@ -16,6 +16,10 @@ public class TunnelMessage {
 		this.content = content;
 	}
 
+	public void setContent(Object content) {
+		this.content = content;
+	}
+
 	TunnelMessage(String messageRaw) {
 		try {
 			JSONObject resolved = new JSONObject(messageRaw);

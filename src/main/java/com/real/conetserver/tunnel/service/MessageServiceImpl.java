@@ -6,7 +6,8 @@ import com.real.conetserver.constants.MessageType;
 import com.real.conetserver.tunnel.model.Message;
 import com.real.conetserver.tunnel.model.TunnelMessageContent;
 import com.real.conetserver.tunnel.model.UserSession;
-import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -17,22 +18,35 @@ import java.util.Date;
  * @author asuis
  */
 @Service
-@Slf4j
 public class MessageServiceImpl implements MessageService {
 
+
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(MessageServiceImpl.class);
+    private final KafkaTemplate<String,String> kafkaTemplate;
+
     @Autowired
-    private KafkaTemplate<String,String> kafkaTemplate;
+    public MessageServiceImpl(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     @Override
     public void sendTunnelMessage(UserSession sender,TunnelMessage message) throws Exception {
         TunnelMessageContent messageContent = null;
         try {
-            messageContent = (TunnelMessageContent) message.getContent();
+            JSONObject mess = (JSONObject)message.getContent();
+            String receiverId = mess.getString("receiverId");
+            String content = mess.getString("content");
+            messageContent = new TunnelMessageContent();
+            messageContent.setContent(content);
+            messageContent.setReceiverId(receiverId);
         } catch (Exception e) {
-            log.warn("cast tunnel message error",e.getMessage());
+            e.printStackTrace();
         }
-        assert messageContent != null;
+        /*
+         * 生成Message
+         * */
         Message message1 = new Message();
+        assert messageContent != null;
         message1.setContent(messageContent.getContent());
         message1.setReceiverId(messageContent.getReceiverId());
         message1.setTime(new Date(System.currentTimeMillis()));
@@ -48,6 +62,11 @@ public class MessageServiceImpl implements MessageService {
         } catch (Exception e) {
             log.warn("tunnel message to json error",message);
         }
-        kafkaTemplate.send(message.getType(),json);
+        try {
+            log.info("message:",message.getType());
+            kafkaTemplate.send(message.getType(),json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

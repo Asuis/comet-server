@@ -4,7 +4,7 @@ import com.qcloud.weapp.ConfigurationException;
 import com.qcloud.weapp.tunnel.TunnelHandleOptions;
 import com.qcloud.weapp.tunnel.TunnelService;
 import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +17,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @Api("小程序连接信道接口")
-@Slf4j
 public class TunnelController {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(TunnelController.class);
+    private final TunnelHandler tunnelHandler;
+
     @Autowired
-    TunnelHandler tunnelHandler;
+    public TunnelController(TunnelHandler tunnelHandler) {
+        this.tunnelHandler = tunnelHandler;
+    }
+
     @RequestMapping("/wx/tunnel")
     public void tunnel(HttpServletRequest request, HttpServletResponse response) {
         TunnelService tunnelService = new TunnelService(request,response);

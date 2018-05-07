@@ -4,7 +4,8 @@ import com.qcloud.weapp.authorization.UserInfo;
 import com.qcloud.weapp.tunnel.Tunnel;
 import com.real.conetserver.tunnel.factory.UserSessionFactory;
 import com.real.conetserver.tunnel.model.UserSession;
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,20 @@ import org.springframework.stereotype.Service;
  * @author asuis
  */
 @Service
-@Slf4j
 public class UserSessionServiceImpl implements UserSessionService {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(UserSessionServiceImpl.class);
+
+    private final RedisTemplate<String,Object> redisTemplate;
+
+    private final UserSessionFactory userSessionFactory;
+
+
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
-    @Autowired
-    private UserSessionFactory userSessionFactory;
+    public UserSessionServiceImpl(RedisTemplate<String, Object> redisTemplate, UserSessionFactory userSessionFactory) {
+        this.redisTemplate = redisTemplate;
+        this.userSessionFactory = userSessionFactory;
+    }
 
     @Override
     public void save(UserSession userSession) {
@@ -33,6 +41,22 @@ public class UserSessionServiceImpl implements UserSessionService {
     @Override
     public void bind(Tunnel tunnel, UserInfo userInfo) {
         try {
+            UserSession userSession = get(userInfo.getOpenId());
+            if (userSession!=null) {
+                //清除已有信道
+                Tunnel tunnel1 = userSession.getTunnel();
+                redisTemplate.opsForHash().delete("tunnels","t_"+tunnel1.getTunnelId());
+
+                //清除过时的userSession
+                redisTemplate.opsForHash().delete("u_s",userInfo.getOpenId());
+
+                //退出原来的房间
+                Integer roomId = (Integer) redisTemplate.opsForHash().get("u_r",userSession.getUserInfo().getOpenId());
+
+                redisTemplate.opsForList().remove("r_"+roomId,1,userSession);
+
+                redisTemplate.opsForHash().delete("u_r",userSession.getUserInfo().getOpenId());
+            }
             redisTemplate.opsForHash().put("tunnels","t_"+tunnel.getTunnelId(),userInfo);
         } catch (Exception e) {
             log.warn("bind tunnel userinfo fail",e.getMessage());
@@ -56,7 +80,10 @@ public class UserSessionServiceImpl implements UserSessionService {
     public UserSession get(String userId) {
         UserSession session = null;
         try {
-            session = (UserSession) redisTemplate.opsForHash().get("u_s","u_"+userId);
+            Object t = redisTemplate.opsForHash().get("u_s","u_"+userId);
+            if (t!=null) {
+                session = (UserSession) t;
+            }
         } catch (Exception e) {
             log.warn("get usersession by user_id error");
         }

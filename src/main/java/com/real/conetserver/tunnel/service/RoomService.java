@@ -3,9 +3,8 @@ package com.real.conetserver.tunnel.service;
 import com.qcloud.weapp.tunnel.Tunnel;
 import com.real.conetserver.tunnel.model.Message;
 import com.real.conetserver.tunnel.model.Room;
+import com.real.conetserver.tunnel.model.RoomData;
 import com.real.conetserver.tunnel.model.UserSession;
-
-import java.util.List;
 
 /**
  * @author asuis
@@ -45,6 +44,10 @@ public interface RoomService {
      */
     public void removeRoomById(Long roomId);
 
+    public boolean isHaveRoomById(Integer roomId);
+
+    public boolean openRoom(Integer roomId, UserSession userSession);
+
     /**
      * 推送消息
      * @param roomId 房间id
@@ -52,4 +55,6 @@ public interface RoomService {
      * @param message 要发送的信息
      */
     public void pushMessageByRoomId(Long roomId,Integer roomSize,Message message);
+
+    public RoomData getRoomDataById(Integer roomId);
 }
