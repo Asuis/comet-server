@@ -5,7 +5,7 @@
 
 	<groupId>com.real</groupId>
 	<artifactId>conet-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
 	<name>conet-server</name>
@@ -25,6 +25,7 @@
 		<spring-cloud.version>Finchley.M8</spring-cloud.version>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
 		<springfox.version>2.7.0</springfox.version>
+		<docker.image.prefix>real</docker.image.prefix>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -156,6 +157,24 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+			<!-- Docker maven plugin -->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<configuration>
+					<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+					<dockerDirectory>src/main/docker</dockerDirectory>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+			<!-- Docker maven plugin -->
 		</plugins>
 	</build>
 
