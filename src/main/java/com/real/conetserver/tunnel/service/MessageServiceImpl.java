@@ -32,7 +32,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void sendTunnelMessage(UserSession sender,TunnelMessage message) throws Exception {
         TunnelMessageContent messageContent = null;
-
+        log.info("senderId:",sender.getUserInfo().getOpenId());
         String senderId = null;
         try {
             JSONObject mess = (JSONObject)message.getContent();
@@ -50,7 +50,7 @@ public class MessageServiceImpl implements MessageService {
          * */
         Message message1 = new Message();
         assert messageContent != null;
-        message1.setSenderId(senderId);
+        message1.setSenderId(sender.getUserInfo().getOpenId());
         message1.setContent(messageContent.getContent());
         message1.setReceiverId(messageContent.getReceiverId());
         message1.setTime(new Date(System.currentTimeMillis()));
