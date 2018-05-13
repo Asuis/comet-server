@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -157,8 +158,11 @@ public class RoomServiceImpl implements RoomService {
                EmitResult result = null;
                try {
                    String msg = JSON.toJSONString(message);
-                   log.info(msg);
-                   result = tunnel.emit(message.getType().getName(),msg);
+                   byte[] temp = msg.getBytes(Charset.forName("UTF-8"));
+                   String str = new String(temp,Charset.forName("ISO-8859-1"));
+                   log.info("转换前:",msg);
+                   log.info("转换后:",str);
+                   result = tunnel.emit(message.getType().getName(),str);
                } catch (EmitError e) {
                    log.warn("userSession-"+u.getUserInfo().getNickName()+"推送失败",e.getMessage());
                    userSessionService.closeTunnel(tunnel);
