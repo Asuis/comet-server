@@ -160,8 +160,8 @@ public class RoomServiceImpl implements RoomService {
                    String msg = JSON.toJSONString(message);
                    byte[] temp = msg.getBytes(Charset.forName("UTF-8"));
                    String str = new String(temp,Charset.forName("ISO-8859-1"));
-                   log.info("转换前:",msg);
-                   log.info("转换后:",str);
+                   log.info("转换前:"+msg);
+                   log.info("转换后:"+str);
                    result = tunnel.emit(message.getType().getName(),str);
                } catch (EmitError e) {
                    log.warn("userSession-"+u.getUserInfo().getNickName()+"推送失败",e.getMessage());
