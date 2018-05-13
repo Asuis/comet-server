@@ -152,7 +152,7 @@ public class RoomServiceImpl implements RoomService {
        message.setTime(new Date(System.currentTimeMillis()));
        try {
            ArrayList<UserSession> userSessions = room.getRoomMembers();
-           log.info("msg:->",message.getContent());
+           log.info("msg:->"+message.getContent());
            for (UserSession u : userSessions) {
                Tunnel tunnel = u.getTunnel();
                EmitResult result = null;

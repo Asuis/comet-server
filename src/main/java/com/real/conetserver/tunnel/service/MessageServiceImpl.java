@@ -33,12 +33,10 @@ public class MessageServiceImpl implements MessageService {
     public void sendTunnelMessage(UserSession sender,TunnelMessage message) throws Exception {
         TunnelMessageContent messageContent = null;
         log.info("senderId:",sender.getUserInfo().getOpenId());
-        String senderId = null;
         try {
             JSONObject mess = (JSONObject)message.getContent();
             String receiverId = mess.getString("receiverId");
             String content = mess.getString("content");
-            senderId = mess.getString("senderId");
             messageContent = new TunnelMessageContent();
             messageContent.setContent(content);
             messageContent.setReceiverId(receiverId);
