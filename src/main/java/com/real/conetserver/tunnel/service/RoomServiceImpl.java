@@ -1,7 +1,6 @@
 package com.real.conetserver.tunnel.service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.qcloud.weapp.tunnel.EmitError;
 import com.qcloud.weapp.tunnel.EmitResult;
@@ -18,7 +17,6 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -158,10 +156,10 @@ public class RoomServiceImpl implements RoomService {
                Tunnel tunnel = u.getTunnel();
                EmitResult result = null;
                try {
-                   FastJsonConfig config = new FastJsonConfig();
-                   config.setCharset(Charset.forName("gb2312"));
-                   String msg = JSON.toJSONString(message,config.getSerializeConfig());
-                   result = tunnel.emit(message.getType().getName(), msg);
+                   String msg = JSON.toJSONString(message);
+                   byte[] b = msg.getBytes("UTF-8");
+                   String str = new String(b,"iso8859-1");
+                   result = tunnel.emit(message.getType().getName(), str);
                } catch (EmitError e) {
                    log.warn("userSession-"+u.getUserInfo().getNickName()+"推送失败",e.getMessage());
                    userSessionService.closeTunnel(tunnel);
@@ -236,4 +234,5 @@ public class RoomServiceImpl implements RoomService {
             return Long.valueOf(first + String.format("%16d", randNo));
         }
     }
+
 }

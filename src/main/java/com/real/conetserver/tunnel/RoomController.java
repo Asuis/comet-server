@@ -45,7 +45,7 @@ public class RoomController {
         return ""+roomId;
     }
 
-    @RequestMapping("/join/m/{mid}")
+    @PutMapping("/join/m/{mid}")
     public Result<RoomData> joinRoom (HttpServletRequest request, HttpServletResponse response, @PathVariable("mid") Integer mid){
         LoginService loginService = new LoginService(request,response);
         UserInfo userInfo = null;
