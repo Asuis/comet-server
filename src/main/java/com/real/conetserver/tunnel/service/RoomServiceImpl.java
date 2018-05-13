@@ -158,10 +158,13 @@ public class RoomServiceImpl implements RoomService {
                EmitResult result = null;
                try {
                    String msg = JSON.toJSONString(message);
-                   String str = java.net.URLEncoder.encode(msg,"GB2312");
-                   log.info("转换前:"+msg);
-                   log.info("转换后:"+str);
-                   result = tunnel.emit(message.getType().getName(),str);
+                   String utf8 = new String(msg.getBytes( "UTF-8"));
+                   log.info("utf-8:"+utf8);
+                   String unicode = new String(utf8.getBytes(),"UTF-8");
+                   log.info("unicode:",unicode);
+                   String gbk = new String(unicode.getBytes("GBK"));
+                   log.info("gbk:",gbk);
+                   result = tunnel.emit(message.getType().getName(),gbk);
                } catch (EmitError e) {
                    log.warn("userSession-"+u.getUserInfo().getNickName()+"推送失败",e.getMessage());
                    userSessionService.closeTunnel(tunnel);
