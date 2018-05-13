@@ -152,15 +152,13 @@ public class RoomServiceImpl implements RoomService {
        message.setTime(new Date(System.currentTimeMillis()));
        try {
            ArrayList<UserSession> userSessions = room.getRoomMembers();
-           log.info("msg:->"+message.getContent());
            for (UserSession u : userSessions) {
                Tunnel tunnel = u.getTunnel();
                EmitResult result = null;
                try {
                    String msg = JSON.toJSONString(message);
-                   byte[] b = msg.getBytes("UTF-8");
-                   String str = new String(b,"iso8859-1");
-                   result = tunnel.emit(message.getType().getName(), str);
+                   log.info(msg);
+                   result = tunnel.emit(message.getType().getName(),msg);
                } catch (EmitError e) {
                    log.warn("userSession-"+u.getUserInfo().getNickName()+"推送失败",e.getMessage());
                    userSessionService.closeTunnel(tunnel);
