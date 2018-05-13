@@ -158,8 +158,7 @@ public class RoomServiceImpl implements RoomService {
                EmitResult result = null;
                try {
                    String msg = JSON.toJSONString(message);
-                   byte[] temp = msg.getBytes(Charset.forName("UTF-8"));
-                   String str = new String(temp,Charset.forName("ISO-8859-1"));
+                   String str = java.net.URLEncoder.encode(msg,"GB2312");
                    log.info("转换前:"+msg);
                    log.info("转换后:"+str);
                    result = tunnel.emit(message.getType().getName(),str);
